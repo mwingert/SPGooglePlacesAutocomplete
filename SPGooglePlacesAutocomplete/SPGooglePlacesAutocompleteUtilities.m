@@ -15,7 +15,16 @@
 @end
 
 SPGooglePlacesAutocompletePlaceType SPPlaceTypeFromDictionary(NSDictionary *placeDictionary) {
-    return [placeDictionary[@"types"] containsObject:@"establishment"] ? SPPlaceTypeEstablishment : SPPlaceTypeGeocode;
+	NSArray *types = placeDictionary[@"types"];
+    if ([types containsObject:@"establishment"]) {
+		return SPPlaceTypeEstablishment;
+	} else if ([types containsObject:@"geocode"]) {
+		return  SPPlaceTypeGeocode;
+	} else if ([types containsObject:@"(cities)"]) {
+		return SPPlaceTypeCities;
+	} else {
+		return SPPlaceTypeInvalid;
+	}
 }
 
 NSString *SPBooleanStringForBool(BOOL boolean) {
@@ -23,7 +32,12 @@ NSString *SPBooleanStringForBool(BOOL boolean) {
 }
 
 NSString *SPPlaceTypeStringForPlaceType(SPGooglePlacesAutocompletePlaceType type) {
-    return (type == SPPlaceTypeGeocode) ? @"geocode" : @"establishment";
+    NSDictionary *typeStrings = @{[NSNumber numberWithInt:SPPlaceTypeEstablishment] : @"establishment",
+								  [NSNumber numberWithInt:SPPlaceTypeGeocode] : @"geocode",
+								  [NSNumber numberWithInt:SPPlaceTypeCities] : @"(cities)",
+								  [NSNumber numberWithInt:SPPlaceTypeInvalid] : @""
+								  };
+    return typeStrings[[NSNumber numberWithInt:type]];
 }
 
 extern BOOL SPIsEmptyString(NSString *string) {
