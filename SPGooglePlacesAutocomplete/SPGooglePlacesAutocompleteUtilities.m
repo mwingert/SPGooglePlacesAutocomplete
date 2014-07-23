@@ -8,6 +8,14 @@
 
 #import "SPGooglePlacesAutocompleteUtilities.h"
 
+static const NSString *SPPlaceTypeStringInvalid = @"";
+static const NSString *SPPlaceTypeStringGeocode = @"geocode";
+static const NSString *SPPlaceTypeStringEstablishment = @"establishment";
+static const NSString *SPPlaceTypeStringCities = @"(cities)";
+
+static const NSString *SPBooleanStringTrue = @"true";
+static const NSString *SPBooleanStringFalse = @"false";
+
 @implementation NSArray(SPFoundationAdditions)
 - (id)onlyObject {
     return [self count] >= 1 ? self[0] : nil;
@@ -16,11 +24,11 @@
 
 SPGooglePlacesAutocompletePlaceType SPPlaceTypeFromDictionary(NSDictionary *placeDictionary) {
 	NSArray *types = placeDictionary[@"types"];
-    if ([types containsObject:@"establishment"]) {
+    if ([types containsObject:SPPlaceTypeStringEstablishment]) {
 		return SPPlaceTypeEstablishment;
-	} else if ([types containsObject:@"geocode"]) {
+	} else if ([types containsObject:SPPlaceTypeStringGeocode]) {
 		return  SPPlaceTypeGeocode;
-	} else if ([types containsObject:@"(cities)"]) {
+	} else if ([types containsObject:SPPlaceTypeStringCities]) {
 		return SPPlaceTypeCities;
 	} else {
 		return SPPlaceTypeInvalid;
@@ -28,16 +36,16 @@ SPGooglePlacesAutocompletePlaceType SPPlaceTypeFromDictionary(NSDictionary *plac
 }
 
 NSString *SPBooleanStringForBool(BOOL boolean) {
-    return boolean ? @"true" : @"false";
+    return boolean ? SPBooleanStringTrue : SPBooleanStringFalse;
 }
 
 NSString *SPPlaceTypeStringForPlaceType(SPGooglePlacesAutocompletePlaceType type) {
-    NSDictionary *typeStrings = @{[NSNumber numberWithInt:SPPlaceTypeEstablishment] : @"establishment",
-								  [NSNumber numberWithInt:SPPlaceTypeGeocode] : @"geocode",
-								  [NSNumber numberWithInt:SPPlaceTypeCities] : @"(cities)",
-								  [NSNumber numberWithInt:SPPlaceTypeInvalid] : @""
+    NSDictionary *typeStrings = @{@(SPPlaceTypeEstablishment) : SPPlaceTypeStringEstablishment,
+								  @(SPPlaceTypeGeocode) : SPPlaceTypeStringGeocode,
+								  @(SPPlaceTypeCities) : SPPlaceTypeStringCities,
+								  @(SPPlaceTypeInvalid) : SPPlaceTypeStringInvalid
 								  };
-    return typeStrings[[NSNumber numberWithInt:type]];
+    return typeStrings[@(type)];
 }
 
 extern BOOL SPIsEmptyString(NSString *string) {
